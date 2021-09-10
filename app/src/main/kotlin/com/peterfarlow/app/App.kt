@@ -4,20 +4,34 @@
 package com.peterfarlow.app
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.core.IncorrectOptionValueCount
+import com.github.ajalt.clikt.core.UsageError
+import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.prompt
-import com.github.ajalt.clikt.parameters.types.int
 
-class Hello : CliktCommand() {
-    val count: Int by option(help="Number of greetings").int().default(1)
-    val name: String by option(help="The person to greet").prompt("Your name")
+class App : CliktCommand() {
+
+    val players: List<String> by option().multiple(
+        default = listOf("T.J.", "Alex", "Peter"),
+    )
 
     override fun run() {
-        for (i in 1..count) {
-            echo("Hello $name!")
+        validatePlayers()
+        startGame()
+    }
+
+    private fun validatePlayers() {
+        if (players.size <= 1) {
+            throw UsageError("Must supply between two and six players")
+        } else {
+            echo("You entered ${players.size} players:")
+            players.forEach { echo(it) }
         }
+    }
+
+    private fun startGame() {
+
     }
 }
 
-fun main(args: Array<String>) = Hello().main(args)
+fun main(args: Array<String>) = App().main(args)

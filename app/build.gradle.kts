@@ -7,9 +7,9 @@ plugins {
 }
 
 dependencies {
-    implementation("org.apache.commons:commons-text")
     implementation(project(":core"))
     implementation("com.github.ajalt.clikt:clikt:3.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 }
 
 application {
