@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+./gradlew --quiet ":app:installDist" && "./app/build/install/app/bin/app" "$@"
