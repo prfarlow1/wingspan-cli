@@ -4,34 +4,16 @@
 package com.peterfarlow.app
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.IncorrectOptionValueCount
-import com.github.ajalt.clikt.core.UsageError
-import com.github.ajalt.clikt.parameters.options.multiple
-import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.core.subcommands
+import kotlinx.serialization.json.Json
 
 class App : CliktCommand() {
 
-    val players: List<String> by option().multiple(
-        default = listOf("T.J.", "Alex", "Peter"),
-    )
-
-    override fun run() {
-        validatePlayers()
-        startGame()
+    companion object {
+        val serializer = Json { prettyPrint = true }
     }
 
-    private fun validatePlayers() {
-        if (players.size <= 1) {
-            throw UsageError("Must supply between two and six players")
-        } else {
-            echo("You entered ${players.size} players:")
-            players.forEach { echo(it) }
-        }
-    }
-
-    private fun startGame() {
-
-    }
+    override fun run() = Unit
 }
 
-fun main(args: Array<String>) = App().main(args)
+fun main(args: Array<String>) = App().subcommands(CreatePlayers(), CreateBirds()).main(args)

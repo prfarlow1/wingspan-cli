@@ -4,12 +4,15 @@
 
 plugins {
     id("com.peterfarlow.kotlin-application-conventions")
+    kotlin("plugin.serialization") version "1.5.30"
 }
 
 dependencies {
     implementation(project(":core"))
     implementation("com.github.ajalt.clikt:clikt:3.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    implementation("com.squareup.okio:okio:3.0.0-alpha.10")
 }
 
 application {

@@ -1,75 +1,94 @@
 package com.peterfarlow
 
-sealed class FoodCost(open val items: Collection<Food>) {
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed class FoodCost {
+
+    abstract val items: Collection<Food>
 
     abstract fun payFoodCost(availableFood: Collection<Food>): FoodCostOutcome
 
-    fun canAfford(availableFood: Collection<Food>) = payFoodCost(availableFood).isSuccess
+    companion object {
+        val none = None
+        val justWild = JustWild
+    }
+}
 
-    object JustWild : FoodCost(setOf(Food.WILD)) {
-        override fun payFoodCost(availableFood: Collection<Food>): FoodCostOutcome {
-            return if (availableFood.isEmpty()) {
-                FoodCostOutcome.Failure(this)
+@Serializable
+object JustWild : FoodCost() {
+    override val items: Collection<Food> = setOf(Food.WILD)
+
+    override fun payFoodCost(availableFood: Collection<Food>): FoodCostOutcome {
+        return if (availableFood.isEmpty()) {
+            FoodCostOutcome.Failure(this)
+        } else {
+            val usedFood = availableFood.toMutableList().apply {
+                removeFirst()
+            }
+            FoodCostOutcome.Success(usedFood)
+        }
+    }
+
+    override fun toString() = "JustWild"
+}
+
+@Serializable
+object None : FoodCost() {
+
+    override val items: Collection<Food> = emptyList()
+
+    override fun payFoodCost(availableFood: Collection<Food>) =
+        FoodCostOutcome.Success(emptyList())
+
+    override fun toString() = "None"
+}
+
+@Serializable
+data class Any(override val items: Collection<Food>) : FoodCost() {
+
+    override fun payFoodCost(availableFood: Collection<Food>): FoodCostOutcome {
+        if (availableFood.isEmpty()) return FoodCostOutcome.Failure(this)
+        val remainingFood = availableFood.toMutableList()
+        for (food in items) {
+            if (remainingFood.remove(food)) {
+                return FoodCostOutcome.Success(listOf(food))
+            }
+        }
+        return FoodCostOutcome.Failure(this)
+    }
+}
+
+@Serializable
+data class All(override val items: Collection<Food>) : FoodCost() {
+
+    override fun payFoodCost(availableFood: Collection<Food>): FoodCostOutcome {
+        if (availableFood.isEmpty()) return FoodCostOutcome.Failure(this)
+        val remainingFood = availableFood.toMutableList()
+        val missingFood = mutableListOf<Food>()
+        val usedFood = mutableListOf<Food>()
+        val sortedFoodCost = items.sorted() // put the wilds last
+        for (food in sortedFoodCost) {
+            if (remainingFood.remove(food)) {
+                usedFood.add(food)
             } else {
-                val usedFood = availableFood.toMutableList().apply {
-                    removeFirst()
-                }
-                FoodCostOutcome.Success(usedFood)
-            }
-        }
-
-        override fun toString() = "JustWild"
-    }
-
-    object None : FoodCost(emptyList()) {
-        override fun payFoodCost(availableFood: Collection<Food>) =
-            FoodCostOutcome.Success(emptyList())
-
-        override fun toString() = "None"
-    }
-
-    data class Any(override val items: Collection<Food>) : FoodCost(items) {
-        override fun payFoodCost(availableFood: Collection<Food>): FoodCostOutcome {
-            if (availableFood.isEmpty()) return FoodCostOutcome.Failure(this)
-            val remainingFood = availableFood.toMutableList()
-            for (food in items) {
-                if (remainingFood.remove(food)) {
-                    return FoodCostOutcome.Success(listOf(food))
-                }
-            }
-            return FoodCostOutcome.Failure(this)
-        }
-    }
-
-    data class All(override val items: Collection<Food>) : FoodCost(items) {
-        override fun payFoodCost(availableFood: Collection<Food>): FoodCostOutcome {
-            if (availableFood.isEmpty()) return FoodCostOutcome.Failure(this)
-            val remainingFood = availableFood.toMutableList()
-            val missingFood = mutableListOf<Food>()
-            val usedFood = mutableListOf<Food>()
-            val sortedFoodCost = items.sorted() // put the wilds last
-            for (food in sortedFoodCost) {
-                if (remainingFood.remove(food)) {
-                    usedFood.add(food)
-                } else {
-                    if (food == Food.WILD) {
-                        if (remainingFood.isEmpty()) {
-                            missingFood.add(food)
-                        } else {
-                            val first = remainingFood.first()
-                            remainingFood.remove(first)
-                            usedFood.add(first)
-                        }
-                    } else {
+                if (food == Food.WILD) {
+                    if (remainingFood.isEmpty()) {
                         missingFood.add(food)
+                    } else {
+                        val first = remainingFood.first()
+                        remainingFood.remove(first)
+                        usedFood.add(first)
                     }
+                } else {
+                    missingFood.add(food)
                 }
             }
-            return if (missingFood.isEmpty()) {
-                FoodCostOutcome.Success(usedFood)
-            } else {
-                FoodCostOutcome.Failure(All(missingFood))
-            }
+        }
+        return if (missingFood.isEmpty()) {
+            FoodCostOutcome.Success(usedFood)
+        } else {
+            FoodCostOutcome.Failure(All(missingFood))
         }
     }
 }
@@ -86,10 +105,10 @@ fun String.toFoodCost(): FoodCost {
     check(parts.size == 2)
     return when {
         parts[0] == "any" -> {
-            FoodCost.Any(parts[1].toFoodList())
+            Any(parts[1].toFoodList())
         }
         parts[0] == "all" -> {
-            FoodCost.All(parts[1].toFoodList())
+            All(parts[1].toFoodList())
         }
         else -> {
             throw IllegalArgumentException()

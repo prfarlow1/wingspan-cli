@@ -1,5 +1,7 @@
 package com.peterfarlow
 
+import kotlinx.serialization.Serializable
+
 enum class TurnAction {
     PLAY_BIRD,
     GAIN_FOOD,
@@ -17,7 +19,17 @@ enum class PowerType {
 enum class Habitat {
     FOREST,
     GRASSLAND,
-    WETLAND
+    WETLAND;
+
+    companion object {
+        val all: Set<Habitat> = values().toSet()
+        val forest: Set<Habitat> = setOf(FOREST)
+        val grassland: Set<Habitat> = setOf(GRASSLAND)
+        val wetland: Set<Habitat> = setOf(WETLAND)
+        val forestGrassland: Set<Habitat> = setOf(FOREST, GRASSLAND)
+        val grasslandWetland: Set<Habitat> = setOf(GRASSLAND, WETLAND)
+
+    }
 }
 
 enum class NestType {
@@ -38,6 +50,7 @@ enum class FoodDiceFace {
     INVERTEBRATE_SEED
 }
 
+@Serializable
 data class PlayerFoodSupply(
     val worms: Int = 0,
     val wheat: Int = 0,
@@ -46,10 +59,12 @@ data class PlayerFoodSupply(
     val cherries: Int = 0
 )
 
+@Serializable
 data class BirdFeeder(
     val food: Set<FoodDiceFace> = emptySet()
 )
 
+@Serializable
 data class PlayedBirds(
     val forestBirds: List<Bird> = emptyList(),
     val grasslandBirds: List<Bird> = emptyList(),
@@ -63,13 +78,6 @@ data class PlayBirdAction(
     val habitat: Habitat
 )
 
-data class Player(
-    val id: Int,
-    val name: String,
-    val tokenColor: TokenColor,
-    val state: PlayerState = PlayerState(),
-)
-
 enum class TokenColor {
     RED,
     BLUE,
@@ -78,6 +86,7 @@ enum class TokenColor {
     YELLOW
 }
 
+@Serializable
 data class GameState(
     val birdTray: Set<Bird> = emptySet(),
     val birdFeeder: BirdFeeder = BirdFeeder()
