@@ -52,9 +52,11 @@ class CreatePlayers : CliktCommand() {
     }
 
     companion object {
+        const val PLAYERS_DIR_NAME = "players"
+        val PLAYERS_DIR = Paths.get(App.GAME_DIR, PLAYERS_DIR_NAME)
         fun playerDir(name: String): File {
             val fileName = name.replace(".", "").trim().lowercase(Locale.US)
-            return Paths.get(App.GAME_DIR, fileName).toFile().apply {
+            return Paths.get(App.GAME_DIR, PLAYERS_DIR_NAME, fileName).toFile().apply {
                 if (!exists()) {
                     createNewFile()
                 }

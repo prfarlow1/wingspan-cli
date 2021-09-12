@@ -8,7 +8,7 @@ import com.github.ajalt.clikt.core.subcommands
 import kotlinx.serialization.json.Json
 import java.nio.file.Paths
 
-class App : CliktCommand(invokeWithoutSubcommand = true) {
+class App : CliktCommand(invokeWithoutSubcommand = true, allowMultipleSubcommands = true) {
 
     companion object {
         const val GAME_DIR = "game"
@@ -20,7 +20,12 @@ class App : CliktCommand(invokeWithoutSubcommand = true) {
         Paths.get(GAME_DIR).toFile().apply {
             mkdir()
         }
+        Paths.get(GAME_DIR, CreatePlayers.PLAYERS_DIR_NAME).toFile().apply {
+            mkdir()
+        }
     }
 }
 
-fun main(args: Array<String>) = App().subcommands(CreatePlayers(), CreateBirds(), PrintPlayer()).main(args)
+fun main(args: Array<String>) = App().subcommands(
+    CreatePlayers(), CreateBirds(), PrintPlayer(), InitialDealBirdCards()
+).main(args)

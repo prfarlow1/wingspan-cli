@@ -6,7 +6,9 @@ import com.peterfarlow.app.App.Companion.serializer
 import kotlinx.serialization.encodeToString
 import okio.buffer
 import okio.sink
+import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.random.Random
 
 class CreateBirds : CliktCommand() {
 
@@ -261,13 +263,14 @@ class CreateBirds : CliktCommand() {
             skljgbrs,
             downyWoodpcker, treeSwallow, annasHummingbird, commonGrackle, grasshopperSparrow, bronzedCowbird, sgk
         )
+        birds.shuffle(random)
         echo("creating ${birds.size} birds")
         echo("forest birds: ${birds.count { it.habitat.contains(Habitat.FOREST) }}")
         echo("grassland birds: ${birds.count { it.habitat.contains(Habitat.GRASSLAND) }}")
         echo("wetland birds: ${birds.count { it.habitat.contains(Habitat.WETLAND) }}")
 
         Paths.get(App.GAME_DIR).toFile().mkdir()
-        val file = Paths.get("${App.GAME_DIR}/birddeck").toFile().apply {
+        val file = DECK_DIR.toFile().apply {
             if (exists()) {
                 delete()
             } else {
@@ -278,5 +281,11 @@ class CreateBirds : CliktCommand() {
         file.sink().buffer().use { sink ->
             sink.writeUtf8(encoding)
         }
+    }
+
+    companion object {
+        private const val BIRD_DECK_FILE_NAME = "birddeck"
+        val DECK_DIR: Path = Paths.get(App.GAME_DIR, BIRD_DECK_FILE_NAME)
+        private val random = Random(69420)
     }
 }
