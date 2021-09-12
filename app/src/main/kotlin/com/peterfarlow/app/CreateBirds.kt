@@ -266,8 +266,8 @@ class CreateBirds : CliktCommand() {
         echo("grassland birds: ${birds.count { it.habitat.contains(Habitat.GRASSLAND) }}")
         echo("wetland birds: ${birds.count { it.habitat.contains(Habitat.WETLAND) }}")
 
-        Paths.get("game").toFile().mkdir()
-        val file = Paths.get("game/birds").toFile().apply {
+        Paths.get(App.GAME_DIR).toFile().mkdir()
+        val file = Paths.get("${App.GAME_DIR}/birddeck").toFile().apply {
             if (exists()) {
                 delete()
             } else {

@@ -6,14 +6,21 @@ package com.peterfarlow.app
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import kotlinx.serialization.json.Json
+import java.nio.file.Paths
 
-class App : CliktCommand() {
+class App : CliktCommand(invokeWithoutSubcommand = true) {
 
     companion object {
+        const val GAME_DIR = "game"
+
         val serializer = Json { prettyPrint = true }
     }
 
-    override fun run() = Unit
+    override fun run() {
+        Paths.get(GAME_DIR).toFile().apply {
+            mkdir()
+        }
+    }
 }
 
-fun main(args: Array<String>) = App().subcommands(CreatePlayers(), CreateBirds()).main(args)
+fun main(args: Array<String>) = App().subcommands(CreatePlayers(), CreateBirds(), PrintPlayer()).main(args)

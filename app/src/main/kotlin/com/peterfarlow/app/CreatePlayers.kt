@@ -12,6 +12,7 @@ import okio.buffer
 import okio.sink
 import java.io.File
 import java.nio.file.Paths
+import java.util.*
 
 class CreatePlayers : CliktCommand() {
 
@@ -27,6 +28,8 @@ class CreatePlayers : CliktCommand() {
     private fun validateNumPlayers() {
         if (players.size <= 1) {
             throw UsageError("Must supply between two and six players")
+        } else if (players.distinct().size != players.size) {
+            throw UsageError("each player name must be unique")
         } else {
             echo("You entered ${players.size} players:")
             players.forEach { echo(it) }
@@ -38,17 +41,23 @@ class CreatePlayers : CliktCommand() {
         val playerList = players.map {
             Player(id = id, name = it, tokenColor = TokenColor.values()[id++])
         }
-        Paths.get("game").toFile().mkdir()
         playerList.forEach { player ->
             val playerName = player.name
-            val finalFile: File = Paths.get("game", playerName).toFile()
-            if (!finalFile.exists()) {
-                finalFile.createNewFile()
-            }
             val encoding = serializer.encodeToString(player)
             echo("encoded player $playerName to $encoding")
-            finalFile.sink().buffer().use { sink ->
+            playerDir(playerName).sink().buffer().use { sink ->
                 sink.writeUtf8(encoding)
+            }
+        }
+    }
+
+    companion object {
+        fun playerDir(name: String): File {
+            val fileName = name.replace(".", "").trim().lowercase(Locale.US)
+            return Paths.get(App.GAME_DIR, fileName).toFile().apply {
+                if (!exists()) {
+                    createNewFile()
+                }
             }
         }
     }
