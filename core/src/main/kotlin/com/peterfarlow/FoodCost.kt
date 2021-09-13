@@ -57,6 +57,10 @@ data class Any(override val items: Collection<Food>) : FoodCost() {
         }
         return FoodCostOutcome.Failure(this)
     }
+
+    override fun toString(): String {
+        return "any-${items.toFoodString()}"
+    }
 }
 
 @Serializable
@@ -91,6 +95,10 @@ data class All(override val items: Collection<Food>) : FoodCost() {
             FoodCostOutcome.Failure(All(missingFood))
         }
     }
+
+    override fun toString(): String {
+        return "all-${items.toFoodString()}"
+    }
 }
 
 sealed class FoodCostOutcome {
@@ -117,3 +125,4 @@ fun String.toFoodCost(): FoodCost {
 }
 
 fun String.toFoodList(): List<Food> = toCharArray().map { Food.deserialize(it) }
+fun Collection<Food>.toFoodString(): String = joinToString(separator = "") { it.symbol }

@@ -13,4 +13,8 @@ data class Player(
         val newHand = state.hand.plus(cards)
         return copy(state = state.copy(hand = newHand))
     }
+
+    fun setFood(foodSupply: PlayerFoodSupply): Player {
+        return copy(state = state.copy(foodTokens = foodSupply))
+    }
 }

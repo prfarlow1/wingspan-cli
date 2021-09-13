@@ -17,13 +17,6 @@ class PrintPlayer : CliktCommand() {
     private val name: String by option("--n", "--name").required()
 
     override fun run() {
-        val file = CreatePlayers.playerDir(name)
-        file.source().use { fileSource ->
-            fileSource.buffer().use { bufferedFileSource ->
-                val rawData = bufferedFileSource.readUtf8()
-                val obj = App.serializer.decodeFromString<Player>(rawData)
-                echo("decoded as $obj")
-            }
-        }
+        echo("${Repository.getPlayer(name)}")
     }
 }

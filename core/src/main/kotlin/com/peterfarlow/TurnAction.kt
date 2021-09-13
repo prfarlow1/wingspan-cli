@@ -52,12 +52,16 @@ enum class FoodDiceFace {
 
 @Serializable
 data class PlayerFoodSupply(
-    val worms: Int = 0,
-    val wheat: Int = 0,
-    val mice: Int = 0,
+    val invertebrates: Int = 0,
+    val seeds: Int = 0,
+    val rodents: Int = 0,
     val fish: Int = 0,
-    val cherries: Int = 0
-)
+    val fruit: Int = 0
+) {
+    companion object {
+        val initial = PlayerFoodSupply(1, 1, 1, 1, 1)
+    }
+}
 
 @Serializable
 data class BirdFeeder(
