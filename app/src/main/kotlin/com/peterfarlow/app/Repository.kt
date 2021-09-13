@@ -43,10 +43,42 @@ object Repository {
         CreateBirds.DECK_DIR.toFile().source().use {
             it.buffer().use { bufferedFileSource ->
                 val rawData = bufferedFileSource.readUtf8()
-                val obj = App.serializer.decodeFromString<Array<Bird>>(rawData)
+                val obj = App.serializer.decodeFromString<List<Bird>>(rawData)
                 return obj.toMutableList()
             }
         }
+    }
+
+    fun discard(bird: Bird) {
+        val file = CreateBirds.DISCARD_DIR.toFile()
+        val new: List<Bird>
+        file.source().use {
+            it.buffer().use { bufferedFileSource ->
+                val rawData = bufferedFileSource.readUtf8()
+                val existingDeck = if (rawData.isEmpty()) {
+                    emptyList<Bird>()
+                } else {
+                    App.serializer.decodeFromString(rawData)
+                }
+                new = existingDeck.toMutableList().apply {
+                    add(bird)
+                }
+            }
+        }
+        file.sink().use {
+            it.buffer().use {  bufferedFileSink ->
+                val raw = App.serializer.encodeToString(new)
+                bufferedFileSink.writeUtf8(raw)
+            }
+        }
+    }
+
+    fun savePlayer(player: Player) {
+        savePlayers(listOf(player))
+    }
+
+    fun savePlayers(vararg players: Player) {
+        savePlayers(players.toList())
     }
 
     fun savePlayers(players: List<Player>) {

@@ -124,5 +124,5 @@ fun String.toFoodCost(): FoodCost {
     }
 }
 
-fun String.toFoodList(): List<Food> = toCharArray().map { Food.deserialize(it) }
+fun String.toFoodList(): List<Food> = toCharArray().map { Food.deserialize(it) ?: throw IllegalArgumentException("unknown symbol $it") }
 fun Collection<Food>.toFoodString(): String = joinToString(separator = "") { it.symbol }

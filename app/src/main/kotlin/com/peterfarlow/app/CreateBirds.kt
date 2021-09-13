@@ -244,7 +244,7 @@ class CreateBirds : CliktCommand() {
             2,
             PowerType.PINK
         )
-        val birds = arrayOf(
+        val birds = listOf(
             ybc,
             nut,
             spotted,
@@ -263,7 +263,7 @@ class CreateBirds : CliktCommand() {
             skljgbrs,
             downyWoodpcker, treeSwallow, annasHummingbird, commonGrackle, grasshopperSparrow, bronzedCowbird, sgk
         )
-        birds.shuffle(random)
+        val shuffled = birds.shuffled(random)
         echo("creating ${birds.size} birds")
         echo("forest birds: ${birds.count { it.habitat.contains(Habitat.FOREST) }}")
         echo("grassland birds: ${birds.count { it.habitat.contains(Habitat.GRASSLAND) }}")
@@ -277,7 +277,7 @@ class CreateBirds : CliktCommand() {
                 createNewFile()
             }
         }
-        val encoding = serializer.encodeToString(birds)
+        val encoding = serializer.encodeToString(shuffled)
         file.sink().buffer().use { sink ->
             sink.writeUtf8(encoding)
         }
@@ -286,6 +286,9 @@ class CreateBirds : CliktCommand() {
     companion object {
         private const val BIRD_DECK_FILE_NAME = "birddeck"
         val DECK_DIR: Path = Paths.get(App.GAME_DIR, BIRD_DECK_FILE_NAME)
+
+        private const val BIRD_DISCARD_FILE_NAME = "birddiscard"
+        val DISCARD_DIR = Paths.get(App.GAME_DIR, BIRD_DISCARD_FILE_NAME)
         private val random = Random(69420)
     }
 }

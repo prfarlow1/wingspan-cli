@@ -28,5 +28,6 @@ class App : CliktCommand(invokeWithoutSubcommand = true, allowMultipleSubcommand
 
 fun main(args: Array<String>) = App().subcommands(
     CreatePlayers(), CreateBirds(), PrintPlayer(), InitialDealBirdCards(),
-    InitialDealFood(), PrintPlayerHand(), PrintPlayerFood()
+    InitialDealFood(), PrintPlayerHand(), PrintPlayerFood(), DiscardFood(), DiscardHandBird(),
+    ValidateGameStart(), TakeFoodFromSupply()
 ).main(args)

@@ -1,7 +1,7 @@
 package com.peterfarlow.app
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.UsageError
+import com.github.ajalt.clikt.core.CliktError
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.peterfarlow.Player
@@ -27,9 +27,9 @@ class CreatePlayers : CliktCommand() {
 
     private fun validateNumPlayers() {
         if (players.size <= 1) {
-            throw UsageError("Must supply between two and six players")
+            throw CliktError("Must supply between two and six players")
         } else if (players.distinct().size != players.size) {
-            throw UsageError("each player name must be unique")
+            throw CliktError("each player name must be unique")
         } else {
             echo("You entered ${players.size} players:")
             players.forEach { echo(it) }

@@ -9,8 +9,10 @@ enum class Food(val symbol: String) {
     WILD("W");
 
     companion object {
-        fun deserialize(symbol: Char): Food = values().firstOrNull{
-            it.symbol == symbol.toString()
-        } ?: throw IllegalArgumentException("unknown symbol $symbol")
+        fun deserialize(symbol: Char): Food? = deserialize(symbol.toString())
+
+        fun deserialize(symbol: String): Food? = values().firstOrNull{
+            it.symbol.equals(symbol, ignoreCase = true)
+        }
     }
 }
