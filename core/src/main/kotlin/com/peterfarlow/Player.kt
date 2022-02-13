@@ -23,7 +23,7 @@ data class Player(
         return copy(state = state.copy(foodTokens =  new))
     }
 
-    fun addFood(food: Food): Player {
+    fun addFood(vararg food: Food): Player {
         val new = state.foodTokens.add(food)
         return copy(state = state.copy(foodTokens = new))
     }

@@ -13,12 +13,11 @@ class DiscardHandBird : CliktCommand() {
 
     override fun run() {
         val player = Repository.getPlayer(name) ?: throw UnknownPlayer(name)
-        val playerBirds = player.state.hand
+        val playerBirds = player.state.hand.toMutableList()
         if (index !in 0..playerBirds.lastIndex) throw CliktError("${player.name} only has ${playerBirds.size} birds")
-        val newBirds = playerBirds.toMutableList().apply {
-            removeAt(index)
-        }
-        val newPlayer = player.copy(state = player.state.copy(hand = newBirds))
+        val discardBird = playerBirds.removeAt(index)
+        Repository.discard(discardBird)
+        val newPlayer = player.copy(state = player.state.copy(hand = playerBirds))
         Repository.savePlayer(newPlayer)
         echo("Discarded ")
         echo("new hand for ${player.name}:")
